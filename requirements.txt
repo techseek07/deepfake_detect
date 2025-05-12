@@ -6,7 +6,7 @@ plotly>=5.0.0
 tensorflow>=2.16.2
 
 # Computer Vision & Face Detection
-opencv-python==4.8.0.76
+opencv-python-headless==4.8.0.76
 retina-face
 pillow
 
