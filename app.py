@@ -1,5 +1,3 @@
-# deepfake_app/app.py
-
 import streamlit as st
 import os
 import numpy as np
@@ -8,7 +6,6 @@ import plotly.express as px
 from moviepy.editor import VideoFileClip
 from face_extractor import extract_faces_from_video
 from predictor import predict_fake_or_real
-
 
 # ---------------------------
 # 1. SETUP DIRECTORIES
@@ -20,7 +17,6 @@ def setup_directories():
 
 setup_directories()
 
-
 # ---------------------------
 # 2. STREAMLIT UI CONFIG
 # ---------------------------
@@ -30,7 +26,6 @@ st.markdown("""
     ### Upload a video file for authenticity analysis
     Supported formats: MP4, MOV, AVI (max 5 minutes)
 """)
-
 
 # ---------------------------
 # 3. VIDEO METADATA
@@ -50,7 +45,6 @@ def display_video_metadata(video_path: str):
     }
     st.sidebar.subheader("Video Metadata")
     st.sidebar.json(metadata)
-
 
 # ---------------------------
 # 4. VIDEO PROCESSING & ANALYSIS
@@ -133,7 +127,6 @@ def analyze_video(uploaded_file):
         if os.path.exists(temp_video_path):
             os.remove(temp_video_path)
 
-
 # ---------------------------
 # 5. MAIN APP FLOW
 # ---------------------------
@@ -147,7 +140,6 @@ if uploaded_file:
     analyze_video(uploaded_file)
 else:
     st.info("Please upload a video file to begin analysis")
-
 
 # ---------------------------
 # 6. SIDEBAR INFO
