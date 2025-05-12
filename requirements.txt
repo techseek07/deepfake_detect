@@ -5,14 +5,10 @@ plotly>=5.0.0
 # Deep Learning
 tensorflow>=2.16.2
 
-# Computer Vision & Face Detection
+# Computer Vision & Face Detection (headless)
 opencv-python-headless==4.8.0.76
 retina-face
 pillow
-
-# Video Processing (metadata)
-moviepy>=2.0.0
-imageio-ffmpeg==0.6.0
 
 # Data Handling
 numpy>=1.23.0
