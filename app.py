@@ -1,9 +1,9 @@
 import streamlit as st
 import os
+import cv2
 import numpy as np
 import pandas as pd
 import plotly.express as px
-from moviepy.editor import VideoFileClip
 from face_extractor import extract_faces_from_video
 from predictor import predict_fake_or_real
 
@@ -11,7 +11,6 @@ from predictor import predict_fake_or_real
 # 1. SETUP DIRECTORIES
 # ---------------------------
 def setup_directories():
-    """Create necessary directories if they don't exist."""
     for directory in ['uploads', 'outputs', 'temp_frames']:
         os.makedirs(directory, exist_ok=True)
 
@@ -28,18 +27,23 @@ st.markdown("""
 """)
 
 # ---------------------------
-# 3. VIDEO METADATA
+# 3. VIDEO METADATA (using headless OpenCV)
 # ---------------------------
 def display_video_metadata(video_path: str):
-    """Display essential video information using moviepy."""
-    clip = VideoFileClip(video_path)
-    fps = clip.fps
-    duration = clip.duration
-    w, h = clip.size
-    clip.close()
+    cap = cv2.VideoCapture(video_path)
+    if not cap.isOpened():
+        st.sidebar.error("❌ Unable to read video metadata")
+        return
+
+    frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    fps         = cap.get(cv2.CAP_PROP_FPS) or 0
+    width       = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+    height      = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    duration    = frame_count / fps if fps > 0 else 0.0
+    cap.release()
 
     metadata = {
-        "Resolution": f"{w}×{h}",
+        "Resolution": f"{width}×{height}",
         "Duration": f"{duration:.2f} seconds",
         "Frame Rate": f"{fps:.2f} FPS"
     }
@@ -50,11 +54,8 @@ def display_video_metadata(video_path: str):
 # 4. VIDEO PROCESSING & ANALYSIS
 # ---------------------------
 def analyze_video(uploaded_file):
-    """Main video analysis pipeline."""
     temp_video_path = os.path.join("uploads", uploaded_file.name)
-
     try:
-        # Save uploaded file
         with open(temp_video_path, "wb") as f:
             f.write(uploaded_file.getbuffer())
 
@@ -73,19 +74,14 @@ def analyze_video(uploaded_file):
             return
 
         # Predict
-        try:
-            with st.spinner("Analyzing facial features..."):
-                predictions, confidence_scores = predict_fake_or_real(faces)
+        with st.spinner("Analyzing facial features..."):
+            predictions, confidence_scores = predict_fake_or_real(faces)
 
-            if not predictions or not confidence_scores:
-                st.error("Analysis failed: Could not process facial features")
-                return
-
-        except Exception as e:
-            st.error(f"Analysis failed: {e}")
+        if not predictions or not confidence_scores:
+            st.error("Analysis failed: Could not process facial features")
             return
 
-        # Results
+        # Display Results
         st.subheader("Analysis Results")
         fake_prob = np.mean(confidence_scores)
         final_verdict = (
@@ -94,25 +90,22 @@ def analyze_video(uploaded_file):
             else "UNCERTAIN"
         )
 
-        col1, col2, col3 = st.columns(3)
-        col1.metric("Fake Probability", f"{fake_prob * 100:.1f}%")
-        col2.metric("Analyzed Frames", len(predictions))
-        col3.metric("Final Verdict", final_verdict, delta_color="off")
+        c1, c2, c3 = st.columns(3)
+        c1.metric("Fake Probability", f"{fake_prob*100:.1f}%")
+        c2.metric("Analyzed Frames", len(predictions))
+        c3.metric("Final Verdict", final_verdict, delta_color="off")
 
         # Detailed Analysis
         with st.expander("Detailed Analysis"):
             tab1, tab2 = st.tabs(["Confidence Timeline", "Frame Samples"])
-
             with tab1:
                 df = pd.DataFrame({
-                    'Frame': range(len(confidence_scores)),
-                    'Fake Confidence': confidence_scores
+                    "Frame": list(range(len(confidence_scores))),
+                    "Fake Confidence": confidence_scores
                 })
-                fig = px.line(
-                    df, x='Frame', y='Fake Confidence',
-                    title="Fake Confidence Over Time",
-                    labels={'Fake Confidence': 'Confidence Score'}
-                )
+                fig = px.line(df, x="Frame", y="Fake Confidence",
+                              title="Fake Confidence Over Time",
+                              labels={"Fake Confidence": "Confidence Score"})
                 st.plotly_chart(fig, use_container_width=True)
 
             with tab2:
@@ -120,7 +113,6 @@ def analyze_video(uploaded_file):
                 for idx, (face, pred) in enumerate(zip(faces[:8], predictions[:8])):
                     with cols[idx % 4]:
                         st.image(face, caption=f"Frame {idx+1}: {'Fake' if pred else 'Real'}")
-
     except Exception as e:
         st.error(f"Processing error: {e}")
     finally:
@@ -135,7 +127,6 @@ uploaded_file = st.file_uploader(
     type=["mp4", "mov", "avi"],
     help="Maximum file size: 500MB"
 )
-
 if uploaded_file:
     analyze_video(uploaded_file)
 else:
@@ -147,13 +138,13 @@ else:
 st.sidebar.markdown("---")
 st.sidebar.subheader("System Specifications")
 st.sidebar.markdown("""
-    **Detection Engine:**
-    - Xception Network (Spatial Analysis)
-    - CNN-LSTM Hybrid (Temporal Patterns)
-    - Vision Transformer (Global Context)
+**Detection Engine:**
+- Xception Network (Spatial Analysis)
+- CNN-LSTM Hybrid (Temporal Patterns)
+- Vision Transformer (Global Context)
 
-    **Decision Thresholds:**
-    - 🔴 FAKE: Confidence > 65%
-    - 🟡 UNCERTAIN: 35–65%
-    - 🟢 REAL: Confidence < 35%
+**Decision Thresholds:**
+- 🔴 FAKE: Confidence > 65%
+- 🟡 UNCERTAIN: 35–65%
+- 🟢 REAL: Confidence < 35%
 """)
