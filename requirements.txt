@@ -1,9 +1,21 @@
-streamlit
+# Web UI
+streamlit>=1.15.0
+plotly>=5.0.0
+
+# Deep Learning
 tensorflow>=2.16.2
-# (no standalone keras—it's bundled in tf)
+
+# Computer Vision & Face Detection
 opencv-python==4.8.0.76
-protobuf==3.20.3
-numpy
-pandas
-plotly
 retina-face
+pillow
+
+# Data Handling
+numpy>=1.23.0
+pandas>=1.5.0
+
+# Serialization / Protocols
+protobuf==3.20.3
+
+# Utilities
+tqdm>=4.60.0
