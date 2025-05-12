@@ -12,7 +12,7 @@ pillow
 
 # Video Processing (metadata)
 moviepy>=2.0.0
-imageio-ffmpeg>=0.10.0
+imageio-ffmpeg==0.6.0
 
 # Data Handling
 numpy>=1.23.0
