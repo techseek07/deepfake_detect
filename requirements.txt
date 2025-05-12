@@ -5,18 +5,20 @@ plotly>=5.0.0
 # Deep Learning
 tensorflow>=2.16.2
 
-# Computer Vision & Face Detection (headless)
-opencv-python-headless>=4.9.0.80  # Updated for Python 3.12 compatibility
-retina-face
+# Computer Vision (Pure Python)
+opencv-python-headless>=4.9.0.80
+imageio>=2.34.0  # Alternative video processing
+imageio-ffmpeg>=0.4.9  # FFmpeg integration
+retina-face>=0.0.14
 pillow>=10.0.0
 
 # Data Handling
-numpy>=1.26.0  # TensorFlow 2.16.2+ requires newer numpy
+numpy>=1.26.0
 pandas>=2.0.0
 
 # Serialization
-protobuf>=4.25.3  # Updated for TensorFlow compatibility
+protobuf>=4.25.3
 
 # Utilities
 tqdm>=4.60.0
-cython  # Required for retina-face compilation
+cython>=3.0.0
