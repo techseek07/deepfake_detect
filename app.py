@@ -1,11 +1,10 @@
-import cv2
-import torch
 import streamlit as st
 import os
 import numpy as np
 import pandas as pd
 import plotly.express as px
-import imageio.v3 as iio  # Changed from OpenCV
+import imageio.v3 as iio
+import cv2
 from face_extractor import extract_faces_from_video
 from predictor import predict_fake_or_real
 
@@ -33,14 +32,18 @@ st.markdown("""
 # 3. VIDEO PROCESSING & ANALYSIS
 # ---------------------------
 def display_video_metadata(video_path: str):
-    """Display essential video information using imageio"""
+    """Display essential video information"""
     try:
-        metadata = iio.immeta(video_path)
+        # Get video metadata using imageio
+        reader = iio.imopen(video_path, "r")
+        metadata = reader.metadata()
+        
         video_info = {
             "Resolution": f"{metadata['shape'][1]}x{metadata['shape'][0]}",
-            "Duration": f"{metadata['duration']:.2f} seconds",
+            "Duration": f"{reader.properties().duration:.2f} seconds",
             "Frame Rate": f"{metadata['fps']:.2f} FPS"
         }
+        reader.close()
     except Exception as e:
         video_info = {"Error": str(e)}
     
@@ -64,11 +67,11 @@ def analyze_video(uploaded_file):
         # Extract faces
         with st.expander("Face Extraction Progress"):
             faces = extract_faces_from_video(temp_video_path)
-            st.success(f"Extracted {len(faces)} face frames")
-
-        if not faces:
-            st.warning("No faces detected in the video")
-            return
+            if faces:
+                st.success(f"Extracted {len(faces)} face frames")
+            else:
+                st.warning("No faces detected in the video")
+                return
 
         # Make predictions
         try:
