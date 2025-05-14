@@ -13,7 +13,7 @@ from predictor import predict_fake_or_real
 # ---------------------------
 def setup_directories():
     """Create necessary directories if they don't exist"""
-    for directory in ['uploads', 'outputs', 'temp_frames']:
+    for directory in ['uploads', 'output', 'temp_frames']:
         os.makedirs(directory, exist_ok=True)
 
 setup_directories()
