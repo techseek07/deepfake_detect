@@ -7,9 +7,12 @@ tensorflow>=2.16.2
 
 # Video & Image Processing
 opencv-python-headless>=4.9.0.80
-imageio>=2.34.0
 imageio-ffmpeg>=0.4.9
-retina-face>=0.0.14
+imageio>=2.34.0
+face-detection>=0.1.3  # Pure Python alternative
+pytorch-lightning>=2.2.0  # For face-detection
+torch>=2.3.0
+
 pillow>=10.0.0
 
 # Data Handling
