@@ -24,7 +24,7 @@ def weighted_focal_loss(gamma=2., alpha=0.25, weight_0=8.0, weight_1=1.0):
 # ---------------------------
 # 2. MODEL LOADING
 # ---------------------------
-MODEL_PATH = "outputs/deepfake_ensemble_model.h5"
+MODEL_PATH = "output/deepfake_ensemble_model.h5"
 
 try:
     model = tf.keras.models.load_model(
