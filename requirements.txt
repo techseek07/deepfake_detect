@@ -1,27 +1,11 @@
-# Web UI
 streamlit>=1.15.0
 plotly>=5.0.0
-
-# Deep Learning
 tensorflow>=2.16.2
-
-# Video & Image Processing
 opencv-python-headless>=4.9.0.80
-imageio-ffmpeg>=0.4.9
 imageio>=2.34.0
-face-detection>=0.1.3  # Pure Python alternative
-pytorch-lightning>=2.2.0  # For face-detection
-torch>=2.3.0
-
+imageio-ffmpeg>=0.4.9
+mtcnn>=0.1.1
 pillow>=10.0.0
-
-# Data Handling
 numpy>=1.26.0
 pandas>=2.0.0
-
-# Serialization
-protobuf>=4.25.3
-
-# Utilities
 tqdm>=4.60.0
-cython>=3.0.0
